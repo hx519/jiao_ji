@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { Avatar, List, Card } from 'antd';
 import { Link } from "react-router-dom";
-import {getAllActivities} from "../../Services/ActivitySevice";
+import {getPassActivities, searchActivities} from "../../Services/ActivitySevice";
+import Search from "antd/es/input/Search";
 
 const default_url = "https://th.bing.com/th/id/R.785580b0aa9cce1c7e016db5ee2e078e?rik=ebpuQj03uKxGQg&riu=http%3a%2f%2fphotos.tuchong.com%2f255820%2ff%2f2852945.jpg&ehk=8sZ0LLnnaIXhdwT1M5Zk2xrfIMFcE%2bV45Nc1839Gj7Y%3d&risl=&pid=ImgRaw&r=0";
 /*
@@ -13,14 +14,36 @@ class ActivityList  extends React.Component {
         // this.state = { books: booksData };
         this.state = { activities: [] };
     }
+    handleSearch = (value) => {
+        if(value === "")
+            getPassActivities().then(r => {
+                this.setState({activities: r});
+            });
+        else {
+            searchActivities(value).then(r => {
+                this.setState({activities: r});
+            });
+            console.log(value);
+        }
+
+    };
 
     async componentDidMount() {
-        const fetchedActivities = await getAllActivities();
+        const fetchedActivities = await getPassActivities();
         this.setState({activities: fetchedActivities});
         console.log(this.state.activities)
     }
     render() {
         return(
+            <div>
+            <Search
+                placeholder="input search text"
+                allowClear
+                enterButton="Search"
+                size="large"
+                onSearch={this.handleSearch}
+                style={{ width: 500, height: 60, margin: "20px auto" }}
+            />
             <List
                 style={{margin: "20px"}}
                 grid={{gutter: 16, column: 4}}
@@ -48,6 +71,8 @@ class ActivityList  extends React.Component {
                     </List.Item>
                 )}
             />
+
+            </div>
         )
     }
 
